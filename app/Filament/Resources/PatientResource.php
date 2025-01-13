@@ -6,10 +6,14 @@ use App\Filament\Resources\PatientResource\Pages;
 use App\Filament\Resources\PatientResource\RelationManagers;
 use App\Models\Patient;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DatePicker;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -43,55 +47,86 @@ class PatientResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-        ->schema([
-            Forms\Components\TextInput::make('name')
-                ->label(__('name'))
-                ->required()
-                ->maxLength(255),
-            Forms\Components\Select::make('type')
-                ->options([
-                    'cat' => 'Cat',
-                    'dog' => 'Dog',
-                    'rabbit' => 'Rabbit',
-                ])
-                ->required(),
-            Forms\Components\DatePicker::make('date_of_birth')
-                ->required()
-                ->maxDate(now()),
-                Forms\Components\Select::make('owner_id')
-                ->relationship('owner', 'name')
-                ->searchable()
-                ->preload()
-                ->createOptionForm([
-                    Forms\Components\TextInput::make('name')
-                        ->required()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('email')
-                        ->label('Email address')
-                        ->email()
-                        ->required()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('phone')
-                        ->label('Phone number')
-                        ->tel()
-                        ->required(),
-                ])
-                ->required(),
-        ]);
+            ->schema([
+                TextInput::make('first_name')
+                    ->required()
+                    ->maxLength(255),
+                TextInput::make('last_name')
+                    ->required()
+                    ->maxLength(255),
+                DatePicker::make('date_of_birth')->required(),
+                Select::make('gender')->options([
+                    'Male' => 'Male',
+                    'Female' => 'Female',
+                    'Other' => 'Other'
+                ])->required(),
+                Select::make('marital_status')->options([
+                    'Single' => 'Single',
+                    'Married' => 'Married',
+                    'Divorced' => 'Divorced',
+                    'Widowed' => 'Widowed'
+                ])->required(),
+                Select::make('nationality')->options([
+                    'India' => 'India',
+                    'USA' => 'USA',
+                    'Kanada' => 'Kanada',
+                ])->required(),
+
+                TextInput::make('occupation')
+                    ->required()
+                    ->string()
+                    ->maxLength(255),
+                TextInput::make('phone')
+                    ->required()
+                    ->numeric()
+                    ->maxLength(10)
+                    ->maxLength(255),
+                TextInput::make('email')
+                    ->required()
+                    ->email()
+                    ->maxLength(255),
+                TextInput::make('address')
+                    ->required()
+                    ->maxLength(255),
+                TextInput::make('emergency_contact_name')
+                    ->required()
+                    ->maxLength(255),
+                TextInput::make('emergency_contact_phone')
+                    ->required()
+                    ->numeric()
+                    ->maxLength(10)
+                    ->maxLength(255),
+            ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->label(__('name'))
+                TextColumn::make('first_name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('type'),
-                Tables\Columns\TextColumn::make('date_of_birth')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('owner.name')
+                TextColumn::make('last_name')
                     ->searchable(),
+                TextColumn::make('email')
+                    ->searchable(),
+                TextColumn::make('phone')
+                    ->searchable(),
+                TextColumn::make('gender')
+                    ->searchable(),
+                TextColumn::make('DOB')
+                    ->searchable(),
+                TextColumn::make('nationality')
+                    ->searchable(),
+                TextColumn::make('marital_status')
+                    ->searchable(),
+                TextColumn::make('occupation')
+                    ->searchable(),
+                TextColumn::make('emergency_contact_name')
+                    ->searchable(),
+                TextColumn::make('emergency_contact_phone')
+                    ->searchable(),
+
+
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('type')
